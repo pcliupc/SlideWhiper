@@ -1,6 +1,6 @@
 const AIService = (function () {
 
-    function buildPrompt(options) {
+    function buildPrompt(options, context) {
         const toneDescriptions = {
             professional: "formal, confident, and business-appropriate",
             energetic: "enthusiastic, dynamic, and high-energy",
@@ -26,6 +26,18 @@ const AIService = (function () {
             languageInstruction = "Respond in the same language as the slide content.";
         }
 
+        // Build context section
+        let contextSection = "";
+
+        if (context.slideText) {
+            contextSection += `\n\nSlide Text Content (for reference, may contain exact names/numbers):\n${context.slideText}`;
+        }
+
+        if (context.previousScript) {
+            contextSection += `\n\nPrevious Slide's Script (for flow continuity):\n${context.previousScript}`;
+            contextSection += `\n\nIMPORTANT: Start with a natural transition from the previous slide. Use phrases like "Building on that...", "Now let's look at...", "Moving forward...", etc.`;
+        }
+
         return `You are an expert speech coach. Generate a speech script based on the visual content of this presentation slide.
 
 Requirements:
@@ -33,10 +45,10 @@ Requirements:
 - Length: ${length}
 - ${languageInstruction}
 
-Make it natural and suitable for a verbal presentation. Do not include stage directions or speaker notes - just the speech text itself.`;
+Make it natural and suitable for a verbal presentation. Do not include stage directions or speaker notes - just the speech text itself.${contextSection}`;
     }
 
-    async function generateSpeech(base64Image, config, options, onChunk) {
+    async function generateSpeech(base64Image, config, options, context, onChunk) {
         if (!config.apiKey) {
             throw new Error("API Key is missing. Please configure it in settings.");
         }
@@ -48,7 +60,7 @@ Make it natural and suitable for a verbal presentation. Do not include stage dir
             endpoint = `${endpoint.replace(/\/+$/, '')}/chat/completions`;
         }
 
-        const promptText = buildPrompt(options || {});
+        const promptText = buildPrompt(options || {}, context || {});
 
         const payload = {
             model: config.model,

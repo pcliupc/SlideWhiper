@@ -36,6 +36,81 @@ const CaptureService = (function () {
         }
     }
 
+    // Extract text from current slide shapes
+    async function getSlideText() {
+        try {
+            return await PowerPoint.run(async (context) => {
+                const selectedSlides = context.presentation.getSelectedSlides();
+                selectedSlides.load("items");
+                await context.sync();
+
+                if (selectedSlides.items.length === 0) {
+                    return "";
+                }
+
+                const currentSlide = selectedSlides.items[0];
+                const shapes = currentSlide.shapes;
+                shapes.load("items");
+                await context.sync();
+
+                const textParts = [];
+                for (const shape of shapes.items) {
+                    try {
+                        shape.load("textFrame");
+                        await context.sync();
+
+                        if (shape.textFrame) {
+                            shape.textFrame.load("textRange");
+                            await context.sync();
+
+                            if (shape.textFrame.textRange) {
+                                shape.textFrame.textRange.load("text");
+                                await context.sync();
+
+                                const text = shape.textFrame.textRange.text;
+                                if (text && text.trim()) {
+                                    textParts.push(text.trim());
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        // Some shapes don't have text frames, skip them
+                        continue;
+                    }
+                }
+
+                return textParts.join("\n");
+            });
+        } catch (error) {
+            console.warn("Could not extract slide text:", error);
+            return "";
+        }
+    }
+
+    // Get current slide index for session tracking
+    async function getSlideIndex() {
+        try {
+            return await PowerPoint.run(async (context) => {
+                const selectedSlides = context.presentation.getSelectedSlides();
+                selectedSlides.load("items");
+                await context.sync();
+
+                if (selectedSlides.items.length === 0) {
+                    return -1;
+                }
+
+                const currentSlide = selectedSlides.items[0];
+                currentSlide.load("id");
+                await context.sync();
+
+                return currentSlide.id;
+            });
+        } catch (error) {
+            console.warn("Could not get slide index:", error);
+            return -1;
+        }
+    }
+
     // Manual Capture helper (processes clipboard items)
     function getSlideImageFromClipboard(clipboardItems) {
         return new Promise((resolve, reject) => {
@@ -66,7 +141,9 @@ const CaptureService = (function () {
     return {
         isSupported: isAutoCaptureSupported,
         captureAuto: getSlideImageAuto,
-        captureManual: getSlideImageFromClipboard
+        captureManual: getSlideImageFromClipboard,
+        getSlideText: getSlideText,
+        getSlideIndex: getSlideIndex
     };
 
 })();

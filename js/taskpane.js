@@ -30,6 +30,12 @@ function initApp() {
     // State
     let currentImageBase64 = null;
 
+    // Session Memory - tracks previous slide scripts for flow continuity
+    let sessionMemory = {
+        previousSlideId: null,
+        previousScript: null
+    };
+
     // --- Navigation & Checks ---
 
     function showView(viewName) {
@@ -141,11 +147,44 @@ function initApp() {
         try {
             const config = ConfigManager.get();
             const options = getSelectedOptions();
-            await AIService.generateSpeech(base64, config, options, (chunk) => {
+
+            // Phase 3: Get slide text and slide ID for context
+            let slideText = "";
+            let currentSlideId = null;
+
+            try {
+                statusMessage.textContent = "Extracting slide context...";
+                slideText = await CaptureService.getSlideText();
+                currentSlideId = await CaptureService.getSlideIndex();
+            } catch (e) {
+                console.warn("Could not extract slide context:", e);
+            }
+
+            // Build context object
+            const context = {
+                slideText: slideText,
+                previousScript: null
+            };
+
+            // Only use previous script if it's from a different slide (for flow continuity)
+            if (sessionMemory.previousSlideId !== null &&
+                sessionMemory.previousSlideId !== currentSlideId &&
+                sessionMemory.previousScript) {
+                context.previousScript = sessionMemory.previousScript;
+            }
+
+            statusMessage.textContent = "Generating speech...";
+
+            await AIService.generateSpeech(base64, config, options, context, (chunk) => {
                 aiOutput.textContent += chunk;
                 // Basic auto-scroll
                 // aiOutput.scrollTop = aiOutput.scrollHeight; 
             });
+
+            // Update session memory with current slide's script
+            sessionMemory.previousSlideId = currentSlideId;
+            sessionMemory.previousScript = aiOutput.textContent;
+
             statusMessage.textContent = "Speech generated successfully.";
         } catch (error) {
             aiOutput.textContent = "Error generating speech: " + error.message;
