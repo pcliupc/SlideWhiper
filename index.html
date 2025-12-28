@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI PPT Speech Assistant</title>
+    <!-- Office.js -->
+    <script src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="ms-font-m">
+    <div id="app-container">
+        <!-- Header -->
+        <header class="header">
+            <h2 class="ms-font-xl">SlideWhisper</h2>
+            <button id="btn-settings" class="icon-button" title="Settings">⚙️</button>
+        </header>
+
+        <!-- Main View: Capture & Process -->
+        <main id="view-main" class="view active">
+            <div id="capture-section">
+                <!-- Auto Mode (Office 365) -->
+                <button id="btn-auto-capture" class="ms-Button ms-Button--primary hidden">
+                    <span class="ms-Button-label">Analyze Current Slide</span>
+                </button>
+                
+                <!-- Manual Mode (Legacy) -->
+                <div id="manual-capture-hint" class="manual-hint hidden">
+                    <p>Auto-capture unavailable.</p>
+                    <p class="highlight">Click here & Press <strong>Ctrl+V</strong> to paste slide screenshot.</p>
+                </div>
+
+                <!-- Preview State -->
+                <div id="preview-container" class="hidden">
+                    <img id="img-preview" alt="Slide Preview" />
+                    <button id="btn-clear" class="text-button">Clear</button>
+                </div>
+            </div>
+
+            <div id="result-section" class="hidden">
+                <div class="result-header">
+                    <h3>Speech Script</h3>
+                    <button id="btn-copy" class="small-button">Copy</button>
+                </div>
+                <div id="ai-output" class="output-box" contenteditable="false">Waiting for AI...</div>
+            </div>
+        </main>
+
+        <!-- Settings View -->
+        <main id="view-settings" class="view hidden">
+            <div class="form-group">
+                <label for="config-base-url">API Base URL</label>
+                <input type="text" id="config-base-url" placeholder="https://api.openai.com" />
+            </div>
+            <div class="form-group">
+                <label for="config-api-key">API Key</label>
+                <input type="password" id="config-api-key" placeholder="sk-..." />
+            </div>
+            <div class="form-group">
+                <label for="config-model">Model Name</label>
+                <input type="text" id="config-model" placeholder="gpt-4o" value="gpt-4o" />
+            </div>
+            <div class="settings-actions">
+                <button id="btn-save-settings" class="ms-Button ms-Button--primary">Save</button>
+                <button id="btn-cancel-settings" class="ms-Button">Cancel</button>
+            </div>
+        </main>
+        
+        <footer>
+            <p id="status-message">Ready</p>
+        </footer>
+    </div>
+
+    <!-- App Logic -->
+    <script src="js/config.js"></script>
+    <script src="js/capture.js"></script>
+    <script src="js/llm.js"></script>
+    <script src="js/taskpane.js"></script>
+</body>
+</html>

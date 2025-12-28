@@ -1,0 +1,189 @@
+body {
+    font-family: "Segoe UI", "Segoe UI Web (West European)", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f3f2f1;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+#app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.header {
+    background: #fff;
+    padding: 0 16px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    z-index: 10;
+}
+
+.header h2 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #d83b01; /* PowerPoint Color */
+}
+
+.icon-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 4px;
+    border-radius: 4px;
+}
+.icon-button:hover {
+    background-color: #edebe9;
+}
+
+.view {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Button Styles */
+.ms-Button {
+    background-color: #fff;
+    border: 1px solid #8a8886;
+    color: #201f1e;
+    padding: 6px 20px;
+    min-width: 80px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    margin-right: 8px;
+}
+
+.ms-Button:hover {
+    background-color: #f3f2f1;
+}
+
+.ms-Button--primary {
+    background-color: #d83b01;
+    border-color: transparent;
+    color: #fff;
+}
+.ms-Button--primary:hover {
+    background-color: #a92e01;
+}
+
+/* Capture Section */
+#capture-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.manual-hint {
+    border: 2px dashed #8a8886;
+    padding: 20px;
+    text-align: center;
+    border-radius: 4px;
+    background: #fff;
+    color: #605e5c;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.manual-hint:hover {
+    border-color: #d83b01;
+    background: #fdf3f0;
+}
+
+#preview-container {
+    width: 100%;
+    text-align: center;
+}
+
+#img-preview {
+    max-width: 100%;
+    border: 1px solid #edebe9;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.text-button {
+    background: none;
+    border: none;
+    color: #0078d4;
+    cursor: pointer;
+    text-decoration: underline;
+    margin-top: 8px;
+}
+
+/* Result Section */
+#result-section {
+    margin-top: 24px;
+    border-top: 1px solid #edebe9;
+    padding-top: 16px;
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.result-header h3 {
+    margin: 0;
+    font-size: 14px;
+}
+
+.output-box {
+    background: #fff;
+    border: 1px solid #edebe9;
+    padding: 12px;
+    min-height: 100px;
+    font-family: inherit;
+    white-space: pre-wrap;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* Settings Form */
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #8a8886;
+    box-sizing: border-box;
+}
+
+.settings-actions {
+    margin-top: 24px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+footer {
+    padding: 8px 16px;
+    font-size: 11px;
+    color: #605e5c;
+    border-top: 1px solid #edebe9;
+}
