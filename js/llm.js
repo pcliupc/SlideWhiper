@@ -1,6 +1,42 @@
 const AIService = (function () {
 
-    async function generateSpeech(base64Image, config, onChunk) {
+    function buildPrompt(options) {
+        const toneDescriptions = {
+            professional: "formal, confident, and business-appropriate",
+            energetic: "enthusiastic, dynamic, and high-energy",
+            storytelling: "narrative-driven, engaging, and memorable",
+            casual: "relaxed, conversational, and friendly"
+        };
+
+        const lengthDescriptions = {
+            short: "very brief (around 30 seconds when spoken)",
+            medium: "moderate length (around 1 minute when spoken)",
+            long: "detailed and comprehensive (around 2 minutes when spoken)"
+        };
+
+        const tone = toneDescriptions[options.tone] || toneDescriptions.professional;
+        const length = lengthDescriptions[options.length] || lengthDescriptions.medium;
+
+        let languageInstruction = "";
+        if (options.language === "english") {
+            languageInstruction = "Respond ONLY in English.";
+        } else if (options.language === "chinese") {
+            languageInstruction = "Respond ONLY in Chinese (中文).";
+        } else {
+            languageInstruction = "Respond in the same language as the slide content.";
+        }
+
+        return `You are an expert speech coach. Generate a speech script based on the visual content of this presentation slide.
+
+Requirements:
+- Tone: ${tone}
+- Length: ${length}
+- ${languageInstruction}
+
+Make it natural and suitable for a verbal presentation. Do not include stage directions or speaker notes - just the speech text itself.`;
+    }
+
+    async function generateSpeech(base64Image, config, options, onChunk) {
         if (!config.apiKey) {
             throw new Error("API Key is missing. Please configure it in settings.");
         }
@@ -12,13 +48,15 @@ const AIService = (function () {
             endpoint = `${endpoint.replace(/\/+$/, '')}/chat/completions`;
         }
 
+        const promptText = buildPrompt(options || {});
+
         const payload = {
             model: config.model,
             messages: [
                 {
                     role: "user",
                     content: [
-                        { type: "text", text: "You are an expert speech coach. Generate a professional and engaging speech script based on the visual content of this presentation slide. Keep it concise, natural, and suitable for a verbal presentation." },
+                        { type: "text", text: promptText },
                         { type: "image_url", image_url: { url: `data:image/png;base64,${base64Image}` } }
                     ]
                 }

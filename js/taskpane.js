@@ -23,6 +23,8 @@ function initApp() {
     const resultSection = document.getElementById("result-section");
     const aiOutput = document.getElementById("ai-output");
     const btnCopy = document.getElementById("btn-copy");
+    const btnRegenerate = document.getElementById("btn-regenerate");
+    const btnInsertNotes = document.getElementById("btn-insert-notes");
     const statusMessage = document.getElementById("status-message");
 
     // State
@@ -118,6 +120,14 @@ function initApp() {
         statusMessage.textContent = "Ready";
     }
 
+    function getSelectedOptions() {
+        return {
+            tone: document.getElementById('option-tone').value,
+            length: document.getElementById('option-length').value,
+            language: document.getElementById('option-language').value
+        };
+    }
+
     async function triggerAIProcessing(base64) {
         if (!ConfigManager.isValid()) {
             statusMessage.textContent = "Please configure API Key first.";
@@ -130,7 +140,8 @@ function initApp() {
 
         try {
             const config = ConfigManager.get();
-            await AIService.generateSpeech(base64, config, (chunk) => {
+            const options = getSelectedOptions();
+            await AIService.generateSpeech(base64, config, options, (chunk) => {
                 aiOutput.textContent += chunk;
                 // Basic auto-scroll
                 // aiOutput.scrollTop = aiOutput.scrollHeight; 
@@ -159,6 +170,79 @@ function initApp() {
     };
 
     btnClear.onclick = clearState;
+
+    // Regenerate button - re-run AI with current image
+    btnRegenerate.onclick = () => {
+        if (currentImageBase64) {
+            statusMessage.textContent = "Regenerating...";
+            triggerAIProcessing(currentImageBase64);
+        } else {
+            statusMessage.textContent = "No slide image available. Capture a slide first.";
+        }
+    };
+
+    // Insert to Notes - write to PowerPoint speaker notes
+    btnInsertNotes.onclick = async () => {
+        const scriptText = aiOutput.innerText;
+        if (!scriptText || scriptText === "Waiting for AI...") {
+            statusMessage.textContent = "No script to insert.";
+            return;
+        }
+
+        try {
+            statusMessage.textContent = "Inserting to notes...";
+            await PowerPoint.run(async (context) => {
+                const selectedSlides = context.presentation.getSelectedSlides();
+                selectedSlides.load("items");
+                await context.sync();
+
+                if (selectedSlides.items.length === 0) {
+                    throw new Error("No slide selected.");
+                }
+
+                const currentSlide = selectedSlides.items[0];
+                // Use setNotes API if available, otherwise fallback
+                // For PowerPoint API 1.3+, we can set notes
+                currentSlide.notesSlide.load("shapes");
+                await context.sync();
+
+                // Find the notes text frame
+                const shapes = currentSlide.notesSlide.shapes;
+                shapes.load("items");
+                await context.sync();
+
+                // Notes placeholder is typically shape index 1 (body placeholder)
+                let notesShape = null;
+                for (const shape of shapes.items) {
+                    shape.load("type, textFrame");
+                }
+                await context.sync();
+
+                for (const shape of shapes.items) {
+                    if (shape.textFrame) {
+                        notesShape = shape;
+                        break;
+                    }
+                }
+
+                if (notesShape) {
+                    notesShape.textFrame.textRange.text = scriptText;
+                    await context.sync();
+                    statusMessage.textContent = "Script inserted to speaker notes!";
+
+                    // Visual feedback
+                    const originText = btnInsertNotes.textContent;
+                    btnInsertNotes.textContent = "✓ Inserted!";
+                    setTimeout(() => btnInsertNotes.textContent = originText, 2000);
+                } else {
+                    throw new Error("Could not find notes text frame.");
+                }
+            });
+        } catch (error) {
+            console.error("Insert to Notes failed:", error);
+            statusMessage.textContent = "Insert failed: " + error.message;
+        }
+    };
 
     // Global Paste Listener
     document.addEventListener("paste", handlePaste);

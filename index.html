@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -9,6 +10,7 @@
     <script src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
     <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body class="ms-font-m">
     <div id="app-container">
         <!-- Header -->
@@ -20,11 +22,40 @@
         <!-- Main View: Capture & Process -->
         <main id="view-main" class="view active">
             <div id="capture-section">
+                <!-- Options Section -->
+                <div id="options-section">
+                    <div class="option-group">
+                        <label for="option-tone">Tone</label>
+                        <select id="option-tone">
+                            <option value="professional">Professional</option>
+                            <option value="energetic">Energetic</option>
+                            <option value="storytelling">Storytelling</option>
+                            <option value="casual">Casual</option>
+                        </select>
+                    </div>
+                    <div class="option-group">
+                        <label for="option-length">Length</label>
+                        <select id="option-length">
+                            <option value="short">Short (~30s)</option>
+                            <option value="medium" selected>Medium (~1min)</option>
+                            <option value="long">Long (~2min)</option>
+                        </select>
+                    </div>
+                    <div class="option-group">
+                        <label for="option-language">Language</label>
+                        <select id="option-language">
+                            <option value="auto">Auto</option>
+                            <option value="english">English</option>
+                            <option value="chinese">中文</option>
+                        </select>
+                    </div>
+                </div>
+
                 <!-- Auto Mode (Office 365) -->
                 <button id="btn-auto-capture" class="ms-Button ms-Button--primary hidden">
                     <span class="ms-Button-label">Analyze Current Slide</span>
                 </button>
-                
+
                 <!-- Manual Mode (Legacy) -->
                 <div id="manual-capture-hint" class="manual-hint hidden">
                     <p>Auto-capture unavailable.</p>
@@ -44,6 +75,11 @@
                     <button id="btn-copy" class="small-button">Copy</button>
                 </div>
                 <div id="ai-output" class="output-box" contenteditable="false">Waiting for AI...</div>
+                <div class="result-actions">
+                    <button id="btn-regenerate" class="action-button" title="Regenerate">🔄 Regenerate</button>
+                    <button id="btn-insert-notes" class="action-button action-button--primary"
+                        title="Insert to PPT Notes">📝 Insert to Notes</button>
+                </div>
             </div>
         </main>
 
@@ -66,7 +102,7 @@
                 <button id="btn-cancel-settings" class="ms-Button">Cancel</button>
             </div>
         </main>
-        
+
         <footer>
             <p id="status-message">Ready</p>
         </footer>
@@ -78,4 +114,5 @@
     <script src="js/llm.js"></script>
     <script src="js/taskpane.js"></script>
 </body>
+
 </html>
