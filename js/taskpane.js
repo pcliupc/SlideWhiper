@@ -220,7 +220,7 @@ function initApp() {
         }
     };
 
-    // Insert to Notes - write to PowerPoint speaker notes
+    // Insert to Notes - copy to clipboard with instructions (Office.js doesn't support notes API)
     btnInsertNotes.onclick = async () => {
         const scriptText = aiOutput.innerText;
         if (!scriptText || scriptText === "Waiting for AI...") {
@@ -229,57 +229,21 @@ function initApp() {
         }
 
         try {
-            statusMessage.textContent = "Inserting to notes...";
-            await PowerPoint.run(async (context) => {
-                const selectedSlides = context.presentation.getSelectedSlides();
-                selectedSlides.load("items");
-                await context.sync();
+            // Copy to clipboard
+            await navigator.clipboard.writeText(scriptText);
 
-                if (selectedSlides.items.length === 0) {
-                    throw new Error("No slide selected.");
-                }
+            statusMessage.textContent = "📋 Copied! Click Notes area in PPT and press Ctrl+V (Cmd+V on Mac) to paste.";
 
-                const currentSlide = selectedSlides.items[0];
-                // Use setNotes API if available, otherwise fallback
-                // For PowerPoint API 1.3+, we can set notes
-                currentSlide.notesSlide.load("shapes");
-                await context.sync();
+            // Visual feedback
+            const originText = btnInsertNotes.textContent;
+            btnInsertNotes.textContent = "✓ Copied!";
+            setTimeout(() => {
+                btnInsertNotes.textContent = originText;
+            }, 2000);
 
-                // Find the notes text frame
-                const shapes = currentSlide.notesSlide.shapes;
-                shapes.load("items");
-                await context.sync();
-
-                // Notes placeholder is typically shape index 1 (body placeholder)
-                let notesShape = null;
-                for (const shape of shapes.items) {
-                    shape.load("type, textFrame");
-                }
-                await context.sync();
-
-                for (const shape of shapes.items) {
-                    if (shape.textFrame) {
-                        notesShape = shape;
-                        break;
-                    }
-                }
-
-                if (notesShape) {
-                    notesShape.textFrame.textRange.text = scriptText;
-                    await context.sync();
-                    statusMessage.textContent = "Script inserted to speaker notes!";
-
-                    // Visual feedback
-                    const originText = btnInsertNotes.textContent;
-                    btnInsertNotes.textContent = "✓ Inserted!";
-                    setTimeout(() => btnInsertNotes.textContent = originText, 2000);
-                } else {
-                    throw new Error("Could not find notes text frame.");
-                }
-            });
         } catch (error) {
-            console.error("Insert to Notes failed:", error);
-            statusMessage.textContent = "Insert failed: " + error.message;
+            console.error("Copy failed:", error);
+            statusMessage.textContent = "Copy failed: " + error.message;
         }
     };
 
