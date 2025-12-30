@@ -19,7 +19,7 @@
     <div id="app-container">
         <!-- Header -->
         <header class="header">
-            <h2 class="ms-font-xl">SlideWhisper</h2>
+            <h2 class="ms-font-xl">SlideWhisper <span id="slide-indicator"></span></h2>
             <button id="btn-settings" class="icon-button" title="Settings">⚙️</button>
         </header>
 
@@ -78,12 +78,32 @@
                     <h3>Speech Script</h3>
                     <button id="btn-copy" class="small-button">Copy</button>
                 </div>
+                <!-- Loading Indicator -->
+                <div id="loading-indicator" class="loading-indicator hidden">
+                    <div class="loading-spinner"></div>
+                    <p class="loading-text">Generating speech script<span
+                            class="loading-dots"><span>.</span><span>.</span><span>.</span></span></p>
+                </div>
                 <div id="ai-output" class="output-box" contenteditable="false">Waiting for AI...</div>
                 <div class="result-actions">
                     <button id="btn-regenerate" class="action-button" title="Regenerate">🔄 Regenerate</button>
                     <button id="btn-insert-notes" class="action-button action-button--primary"
                         title="Copy to clipboard for pasting into notes">📋 Copy for Notes</button>
                 </div>
+            </div>
+
+            <!-- History Section -->
+            <div id="history-section" class="hidden">
+                <div class="history-header">
+                    <h3>Generated History</h3>
+                    <button id="btn-toggle-history" class="text-button">Hide</button>
+                </div>
+                <div id="history-list" class="history-list">
+                    <!-- Dynamically populated with history items -->
+                </div>
+                <button id="btn-clear-all-history" class="text-button text-button--danger">
+                    Clear All History
+                </button>
             </div>
         </main>
 
@@ -136,6 +156,7 @@
     <script src="js/config.js"></script>
     <script src="js/capture.js"></script>
     <script src="js/llm.js"></script>
+    <script src="js/history.js"></script>
     <script src="js/taskpane.js"></script>
 </body>
 

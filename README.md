@@ -19,6 +19,9 @@ SlideWhisper is a Microsoft PowerPoint Add-in that uses AI to automatically gene
 | 🔄 **Regenerate** | Instantly regenerate with different settings |
 | 📝 **Insert to Notes** | Save scripts directly to PowerPoint speaker notes |
 | 🔗 **Flow Continuity** | Smart transitions between consecutive slides |
+| 🔍 **Slide History** | Automatically saves and tracks scripts for each slide |
+| ⚡ **Auto-Switch** | Detects slide changes and loads corresponding scripts |
+| 📚 **History List** | View and navigate all generated scripts in one place |
 
 ---
 
@@ -76,6 +79,8 @@ SlideWhisper is a Microsoft PowerPoint Add-in that uses AI to automatically gene
 
 ## 📖 Usage
 
+### Basic Workflow
+
 1. **Select options** - Choose your preferred Tone, Length, and Language
 2. **Capture slide** - Click "Analyze Current Slide" (or paste a screenshot)
 3. **Review script** - Edit the generated script if needed
@@ -83,6 +88,27 @@ SlideWhisper is a Microsoft PowerPoint Add-in that uses AI to automatically gene
    - 📋 **Copy** - Copy to clipboard
    - 🔄 **Regenerate** - Try again with same or different options  
    - 📝 **Insert to Notes** - Save directly to PowerPoint speaker notes
+
+### Slide History Management
+
+**Automatic Tracking**: SlideWhisper now automatically detects when you navigate between slides and saves your generated scripts:
+
+- **Auto-save**: Every generated script is automatically saved for its slide
+- **Auto-switch**: When you click on a different slide in PowerPoint, the add-in automatically displays the saved script (if one exists)
+- **History list**: View all slides with generated scripts in the "Generated History" section
+- **Quick navigation**: Click any history item to view that slide's script
+- **Delete options**: Remove individual scripts or clear all history
+
+**Example Workflow**:
+1. Generate script for Slide 1 → Saved automatically
+2. Navigate to Slide 3 in PowerPoint → Add-in detects change
+3. Generate script for Slide 3 → Saved automatically
+4. Navigate back to Slide 1 → Previous script loads automatically
+5. Click history item for Slide 5 → View that slide's script
+
+> **Note**: Script history is saved within the PowerPoint file itself, so it persists across sessions and devices.
+
+> **Known Limitation**: History uses slide IDs for tracking. If you reorder slides in your presentation, history mappings may become incorrect.
 
 ### Flow Continuity
 When generating scripts for consecutive slides, SlideWhisper remembers the previous script and creates natural transitions like:
