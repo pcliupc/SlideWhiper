@@ -138,12 +138,46 @@ const CaptureService = (function () {
         });
     }
 
+    // Get 1-based slide position (index) in the presentation
+    async function getSlideIndexNumber() {
+        try {
+            return await PowerPoint.run(async (context) => {
+                const slides = context.presentation.slides;
+                slides.load("items");
+                const selectedSlides = context.presentation.getSelectedSlides();
+                selectedSlides.load("items");
+                await context.sync();
+
+                if (selectedSlides.items.length === 0) {
+                    return -1;
+                }
+
+                const currentSlide = selectedSlides.items[0];
+                currentSlide.load("id");
+                await context.sync();
+
+                // Find the index of current slide in all slides
+                for (let i = 0; i < slides.items.length; i++) {
+                    slides.items[i].load("id");
+                }
+                await context.sync();
+
+                const index = slides.items.findIndex(s => s.id === currentSlide.id);
+                return index >= 0 ? index + 1 : -1; // 1-based index
+            });
+        } catch (error) {
+            console.warn("Could not get slide index number:", error);
+            return -1;
+        }
+    }
+
     return {
         isSupported: isAutoCaptureSupported,
         captureAuto: getSlideImageAuto,
         captureManual: getSlideImageFromClipboard,
         getSlideText: getSlideText,
-        getSlideIndex: getSlideIndex
+        getSlideIndex: getSlideIndex,
+        getSlideIndexNumber: getSlideIndexNumber
     };
 
 })();

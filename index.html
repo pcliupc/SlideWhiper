@@ -93,10 +93,15 @@
                     <h3>Speech Script</h3>
                     <button id="btn-copy" class="small-button">Copy</button>
                 </div>
+                <!-- Context Chip -->
+                <div id="context-chip" class="context-chip hidden">
+                    <span class="context-chip-icon">🔗</span>
+                    <span id="context-chip-text">Linked to Slide 2</span>
+                </div>
                 <!-- Loading Indicator -->
                 <div id="loading-indicator" class="loading-indicator hidden">
                     <div class="loading-spinner"></div>
-                    <p class="loading-text">Generating speech script<span
+                    <p id="loading-status" class="loading-text">Analyzing<span
                             class="loading-dots"><span>.</span><span>.</span><span>.</span></span></p>
                 </div>
                 <div id="ai-output" class="output-box" contenteditable="false">Waiting for AI...</div>
@@ -155,6 +160,18 @@
                 <div class="form-group">
                     <label for="config-model">Model Name</label>
                     <input type="text" id="config-model" placeholder="gpt-4o" value="gpt-4o" />
+                </div>
+            </div>
+
+            <!-- Behavior Settings -->
+            <div class="settings-section">
+                <h3 class="settings-section-title">Behavior</h3>
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="config-auto-generate">
+                        Auto-generate speech on slide switch
+                    </label>
+                    <small class="form-hint">Automatically analyze and generate when navigating to a new slide</small>
                 </div>
             </div>
 

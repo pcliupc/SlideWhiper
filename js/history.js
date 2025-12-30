@@ -5,7 +5,7 @@
  * travels with the file across devices and sessions.
  * 
  * Storage key: 'slideHistory'
- * Data structure: { slideId: { slideId, slideTitle, script, timestamp, options } }
+ * Data structure: { slideId: { slideId, slideIndex, slideTitle, script, timestamp, options } }
  */
 const HistoryManager = (function () {
     const STORAGE_KEY = 'slideHistory';
@@ -105,6 +105,7 @@ const HistoryManager = (function () {
             // Store with slideId as key
             historyData[slideId] = {
                 slideId: slideId,
+                slideIndex: slideData.slideIndex || null,
                 slideTitle: slideData.slideTitle || '',
                 script: slideData.script || '',
                 timestamp: slideData.timestamp || Date.now(),
@@ -133,6 +134,21 @@ const HistoryManager = (function () {
             return historyData[slideId] || null;
         } catch (error) {
             console.error(`Failed to load history for slide ${slideId}:`, error);
+            return null;
+        }
+    }
+
+    /**
+     * Load slide script by slide index (1-based position)
+     * @param {number} slideIndex - 1-based slide position
+     * @returns {Object|null} Slide data or null if not found
+     */
+    function loadByIndex(slideIndex) {
+        try {
+            const historyData = _hydrate();
+            return Object.values(historyData).find(item => item.slideIndex === slideIndex) || null;
+        } catch (error) {
+            console.error(`Failed to load history for slide index ${slideIndex}:`, error);
             return null;
         }
     }
@@ -183,6 +199,7 @@ const HistoryManager = (function () {
     return {
         save: save,
         load: load,
+        loadByIndex: loadByIndex,
         getAll: getAll,
         delete: deleteItem,
         clearAll: clearAll

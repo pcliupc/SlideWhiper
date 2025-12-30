@@ -42,12 +42,6 @@ function initApp() {
     let currentImageBase64 = null;
     let currentSlideId = null;
 
-    // Session Memory - tracks previous slide scripts for flow continuity
-    let sessionMemory = {
-        previousSlideId: null,
-        previousScript: null
-    };
-
     // --- Navigation & Checks ---
 
     function showView(viewName) {
@@ -80,6 +74,7 @@ function initApp() {
         document.getElementById('config-base-url').value = config.baseUrl;
         document.getElementById('config-api-key').value = config.apiKey;
         document.getElementById('config-model').value = config.model;
+        document.getElementById('config-auto-generate').checked = config.autoGenerate;
     }
 
     function saveSettingsFromUI() {
@@ -88,7 +83,8 @@ function initApp() {
             backendApiKey: document.getElementById('config-backend-api-key').value,
             baseUrl: document.getElementById('config-base-url').value,
             apiKey: document.getElementById('config-api-key').value,
-            model: document.getElementById('config-model').value
+            model: document.getElementById('config-model').value,
+            autoGenerate: document.getElementById('config-auto-generate').checked
         };
         ConfigManager.save(config);
         showView('main');
@@ -152,6 +148,25 @@ function initApp() {
     }
 
     // --- History Management Functions ---
+
+    /**
+     * Update context chip to show context source
+     */
+    function updateContextChip(slideIndex) {
+        const chip = document.getElementById('context-chip');
+        const chipText = document.getElementById('context-chip-text');
+
+        if (!chip || !chipText) return;
+
+        if (slideIndex) {
+            chipText.textContent = `Linked to Slide ${slideIndex}`;
+            chip.classList.remove('hidden', 'context-chip--standalone');
+        } else {
+            chipText.textContent = 'Standalone';
+            chip.classList.remove('hidden');
+            chip.classList.add('context-chip--standalone');
+        }
+    }
 
     /**
      * Extract slide title from slide text (first non-empty line)
@@ -219,6 +234,16 @@ function initApp() {
             updateSlideIndicator(slideId);
             await loadSlideContent(slideId);
             renderHistoryList();
+
+            // Auto-generate if enabled and no history exists for this slide
+            const config = ConfigManager.get();
+            if (config.autoGenerate && !HistoryManager.load(slideId)) {
+                statusMessage.textContent = "Auto-generating speech...";
+                await handleAutoCapture();
+                if (currentImageBase64) {
+                    await triggerAIProcessing(currentImageBase64);
+                }
+            }
         } catch (error) {
             console.error('Failed to handle slide change:', error);
         }
@@ -367,39 +392,66 @@ function initApp() {
         aiOutput.classList.add('hidden');
         aiOutput.textContent = ""; // Clear previous
 
+        // Helper to update loading status
+        function updateLoadingStatus(step) {
+            const statusEl = document.getElementById('loading-status');
+            const messages = {
+                capture: 'Analyzing',
+                notes: 'Reading Notes',
+                context: 'Linking Context',
+                stream: 'Writing'
+            };
+            if (statusEl && messages[step]) {
+                statusEl.innerHTML = `${messages[step]}<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>`;
+            }
+        }
+
         try {
             const config = ConfigManager.get();
             const options = getSelectedOptions();
 
-            // Phase 3: Get slide text and slide ID for context
+            // Phase 1: Capture - Get slide text and slide ID for context
+            updateLoadingStatus('capture');
             let slideText = "";
-            let currentSlideId = null;
+            let slideId = null;
+            let slideIndex = -1;
 
             try {
                 statusMessage.textContent = "Extracting slide context...";
                 slideText = await CaptureService.getSlideText();
-                currentSlideId = await CaptureService.getSlideIndex();
+                slideId = await CaptureService.getSlideIndex();
+                slideIndex = await CaptureService.getSlideIndexNumber();
             } catch (e) {
                 console.warn("Could not extract slide context:", e);
             }
 
-            // Phase 3b: Get Manual Notes
+            // Phase 2: Notes - Get Manual Notes
+            updateLoadingStatus('notes');
             let notes = notesInput.value.trim();
 
-            // Build context object
+            // Phase 3: Context - Use logical predecessor (Slide N-1)
+            updateLoadingStatus('context');
             const context = {
                 slideText: slideText,
                 notes: notes,
-                previousScript: null
+                previousScript: null,
+                previousSlideIndex: null
             };
 
-            // Only use previous script if it's from a different slide (for flow continuity)
-            if (sessionMemory.previousSlideId !== null &&
-                sessionMemory.previousSlideId !== currentSlideId &&
-                sessionMemory.previousScript) {
-                context.previousScript = sessionMemory.previousScript;
+            // Logical Predecessor: Look up Slide N-1
+            if (slideIndex > 1) {
+                const prevSlide = HistoryManager.loadByIndex(slideIndex - 1);
+                if (prevSlide && prevSlide.script) {
+                    context.previousScript = prevSlide.script;
+                    context.previousSlideIndex = slideIndex - 1;
+                }
             }
 
+            // Update context chip
+            updateContextChip(context.previousSlideIndex);
+
+            // Phase 4: Stream - Generate speech
+            updateLoadingStatus('stream');
             statusMessage.textContent = "Generating speech...";
 
             await AIService.generateSpeech(base64, config, options, context, (chunk) => {
@@ -410,23 +462,18 @@ function initApp() {
                 }
 
                 aiOutput.textContent += chunk;
-                // Basic auto-scroll
-                // aiOutput.scrollTop = aiOutput.scrollHeight; 
             });
 
             // Save to history after successful generation
             const slideTitle = await getSlideTitle();
-            await HistoryManager.save(currentSlideId, {
-                slideId: currentSlideId,
+            await HistoryManager.save(slideId, {
+                slideId: slideId,
+                slideIndex: slideIndex,
                 slideTitle: slideTitle,
                 script: aiOutput.textContent,
                 timestamp: Date.now(),
                 options: options
             });
-
-            // Update session memory with current slide's script
-            sessionMemory.previousSlideId = currentSlideId;
-            sessionMemory.previousScript = aiOutput.textContent;
 
             // Refresh history list
             renderHistoryList();
