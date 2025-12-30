@@ -13,6 +13,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/notes.css">
 </head>
 
 <body class="ms-font-m">
@@ -68,8 +69,22 @@
 
                 <!-- Preview State -->
                 <div id="preview-container" class="hidden">
-                    <img id="img-preview" alt="Slide Preview" />
-                    <button id="btn-clear" class="text-button">Clear</button>
+                    <div class="preview-content">
+                        <img id="img-preview" alt="Slide Preview" />
+
+                        <!-- Manual Notes Input -->
+                        <div class="notes-wrapper">
+                            <label for="notes-input" class="notes-label">Slide Notes / Requirements (Optional)</label>
+                            <textarea id="notes-input" class="notes-textarea"
+                                placeholder="Paste slide notes or type specific requirements here..."></textarea>
+                        </div>
+
+                        <div class="preview-actions">
+                            <button id="btn-generate" class="ms-Button ms-Button--primary large-button">✨ Generate
+                                Script</button>
+                            <button id="btn-clear" class="ms-Button">Cancel</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -86,25 +101,27 @@
                 </div>
                 <div id="ai-output" class="output-box" contenteditable="false">Waiting for AI...</div>
                 <div class="result-actions">
-                    <button id="btn-regenerate" class="action-button" title="Regenerate">🔄 Regenerate</button>
-                    <button id="btn-insert-notes" class="action-button action-button--primary"
-                        title="Copy to clipboard for pasting into notes">📋 Copy for Notes</button>
-                </div>
-            </div>
+                    <div class="result-actions">
+                        <button id="btn-insert-notes" class="action-button action-button--primary"
+                            title="Copy to clipboard for pasting into notes">📋 Copy for Notes</button>
+                    </div>
 
-            <!-- History Section -->
-            <div id="history-section" class="hidden">
-                <div class="history-header">
-                    <h3>Generated History</h3>
-                    <button id="btn-toggle-history" class="text-button">Hide</button>
                 </div>
-                <div id="history-list" class="history-list">
-                    <!-- Dynamically populated with history items -->
+
+
+                <!-- History Section -->
+                <div id="history-section" class="hidden">
+                    <div class="history-header">
+                        <h3>Generated History</h3>
+                        <button id="btn-toggle-history" class="text-button">Hide</button>
+                    </div>
+                    <div id="history-list" class="history-list">
+                        <!-- Dynamically populated with history items -->
+                    </div>
+                    <button id="btn-clear-all-history" class="text-button text-button--danger">
+                        Clear All History
+                    </button>
                 </div>
-                <button id="btn-clear-all-history" class="text-button text-button--danger">
-                    Clear All History
-                </button>
-            </div>
         </main>
 
         <!-- Settings View -->

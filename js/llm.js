@@ -38,6 +38,11 @@ const AIService = (function () {
             contextSection += `\n\nIMPORTANT: Start with a natural transition from the previous slide. Use phrases like "Building on that...", "Now let's look at...", "Moving forward...", etc.`;
         }
 
+        if (context.notes) {
+            contextSection += `\n\nSpeaker Notes (CRITICAL context from presenter):\n${context.notes}`;
+            contextSection += `\n\nIMPORTANT: You MUST incorporate the key points from the Speaker Notes into the speech. The notes represent what the speaker intends to say.`;
+        }
+
         return `You are an expert speech coach. Generate a speech script based on the visual content of this presentation slide.
 
 Requirements:

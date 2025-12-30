@@ -73,3 +73,12 @@ The header MUST have improved visual polish.
   - Properly sized and styled title
   - Polished icon button with hover state
 
+### Requirement: Notes UI Design
+The notes integration UI MUST adhere to the project's visual design system.
+
+#### Scenario: Textarea Styling
+- **GIVEN** the notes manual input textarea
+- **WHEN** visible
+- **THEN** it MUST use the standard form input styling (border, padding, font)
+- **AND** use the `Inter` font family (monospaced font is NOT required)
+

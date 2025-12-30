@@ -24,7 +24,6 @@ function initApp() {
     const aiOutput = document.getElementById("ai-output");
     const loadingIndicator = document.getElementById("loading-indicator");
     const btnCopy = document.getElementById("btn-copy");
-    const btnRegenerate = document.getElementById("btn-regenerate");
     const btnInsertNotes = document.getElementById("btn-insert-notes");
     const statusMessage = document.getElementById("status-message");
 
@@ -34,6 +33,10 @@ function initApp() {
     const btnToggleHistory = document.getElementById("btn-toggle-history");
     const btnClearAllHistory = document.getElementById("btn-clear-all-history");
     const slideIndicator = document.getElementById("slide-indicator");
+
+    // Notes & Preview Elements
+    const btnGenerate = document.getElementById("btn-generate");
+    const notesInput = document.getElementById("notes-input");
 
     // State
     let currentImageBase64 = null;
@@ -99,8 +102,11 @@ function initApp() {
             statusMessage.textContent = "Capturing slide...";
             const base64 = await CaptureService.captureAuto();
             showPreview(base64);
-            statusMessage.textContent = "Slide captured. Analyzing...";
-            triggerAIProcessing(base64);
+            statusMessage.textContent = "Slide captured. Add notes & Click Generate.";
+
+            // Focus notes input for convenience
+            if (notesInput) notesInput.focus();
+
         } catch (error) {
             statusMessage.textContent = "Capture failed: " + error.message;
             console.error(error);
@@ -127,6 +133,12 @@ function initApp() {
         previewContainer.classList.remove('hidden');
         manualCaptureHint.classList.add('hidden'); // Hide hint once we have an image
         btnAutoCapture.classList.add('hidden');    // Hide auto button to focus on result
+
+        // Ensure result section is hidden during preview/edit
+        resultSection.classList.add('hidden');
+
+        // Reset notes if it's a new capture 
+        if (notesInput.value === "Waiting for AI...") notesInput.value = "";
     }
 
     function clearState() {
@@ -371,9 +383,13 @@ function initApp() {
                 console.warn("Could not extract slide context:", e);
             }
 
+            // Phase 3b: Get Manual Notes
+            let notes = notesInput.value.trim();
+
             // Build context object
             const context = {
                 slideText: slideText,
+                notes: notes,
                 previousScript: null
             };
 
@@ -450,16 +466,6 @@ function initApp() {
         }
     };
 
-    // Regenerate button - re-run AI with current image
-    btnRegenerate.onclick = () => {
-        if (currentImageBase64) {
-            statusMessage.textContent = "Regenerating...";
-            triggerAIProcessing(currentImageBase64);
-        } else {
-            statusMessage.textContent = "No slide image available. Capture a slide first.";
-        }
-    };
-
     // Insert to Notes - copy to clipboard with instructions (Office.js doesn't support notes API)
     btnInsertNotes.onclick = async () => {
         const scriptText = aiOutput.innerText;
@@ -506,6 +512,20 @@ function initApp() {
         console.log('Toggle History button listener attached');
     } else {
         console.error('btnToggleHistory element not found - check HTML ID');
+    }
+
+    // --- Notes Integration Logic ---
+
+    // Generate button (from preview)
+    if (btnGenerate) {
+        btnGenerate.onclick = () => {
+            if (currentImageBase64) {
+                statusMessage.textContent = "Starting generation...";
+                triggerAIProcessing(currentImageBase64);
+            }
+        };
+    } else {
+        console.error("btnGenerate not found");
     }
 
     // --- Slide Change Detection Setup ---
