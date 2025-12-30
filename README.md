@@ -57,6 +57,13 @@ SlideWhisper is a Microsoft PowerPoint Add-in that uses AI to automatically gene
 
 ## 🛠️ Configuration
 
+### Backend Service Settings
+| Setting | Description | Default |
+|---------|-------------|---------|
+| Backend URL | The server hosting this add-in | `localhost:3000` |
+| Backend API Key | Optional API key for SaaS subscriptions | (empty) |
+
+### AI Service Settings
 | Setting | Description | Example |
 |---------|-------------|---------|
 | API Base URL | Your LLM API endpoint | `https://api.openai.com` |
@@ -119,6 +126,40 @@ npx http-server -p 3000 --cors
 - **Frontend**: Vanilla JavaScript, HTML5, CSS3
 - **Office Integration**: Office.js (PowerPointApi 1.8+)
 - **AI**: OpenAI-compatible Chat Completions API with streaming
+
+### Deployment Modes
+
+SlideWhisper supports two deployment modes:
+
+#### 1. Self-hosted Mode (Development)
+Run your own local server for development or personal use:
+```bash
+npx http-server -p 3000 --cors
+```
+Use `manifest.dev.xml` for sideloading.
+
+#### 2. SaaS Mode (Production)
+Deploy as a hosted service for your users:
+
+1. **Deploy to production server**
+   - Host all files on your production domain (e.g., `https://slidewhisper.yourcompany.com`)
+   - Ensure HTTPS is configured
+
+2. **Configure production manifest**
+   - Copy `manifest.prod.xml` and replace `YOUR_PRODUCTION_DOMAIN` with your actual domain
+   - Generate a new unique GUID for the `<Id>` element
+   - Update `SupportUrl` with your support page
+
+3. **Distribute to users**
+   - Users install using your production manifest
+   - Users configure their Backend API Key in settings (if you require authentication)
+
+#### Manifest Files
+| File | Purpose |
+|------|---------|
+| `manifest.xml` | Default manifest (localhost:3000) |
+| `manifest.dev.xml` | Explicit development manifest |
+| `manifest.prod.xml` | Production template with placeholders |
 
 ---
 

@@ -1,20 +1,25 @@
-const ConfigManager = (function() {
+const ConfigManager = (function () {
     const KEYS = {
         BASE_URL: 'sw_base_url',
         API_KEY: 'sw_api_key',
-        MODEL: 'sw_model'
+        MODEL: 'sw_model',
+        BACKEND_URL: 'sw_backend_url',
+        BACKEND_API_KEY: 'sw_backend_api_key'
     };
 
     const DEFAULTS = {
         BASE_URL: 'https://api.openai.com',
-        MODEL: 'gpt-4o'
+        MODEL: 'gpt-4o',
+        BACKEND_URL: 'localhost:3000'
     };
 
     function getConfig() {
         return {
             baseUrl: localStorage.getItem(KEYS.BASE_URL) || DEFAULTS.BASE_URL,
             apiKey: localStorage.getItem(KEYS.API_KEY) || '',
-            model: localStorage.getItem(KEYS.MODEL) || DEFAULTS.MODEL
+            model: localStorage.getItem(KEYS.MODEL) || DEFAULTS.MODEL,
+            backendUrl: localStorage.getItem(KEYS.BACKEND_URL) || DEFAULTS.BACKEND_URL,
+            backendApiKey: localStorage.getItem(KEYS.BACKEND_API_KEY) || ''
         };
     }
 
@@ -22,6 +27,8 @@ const ConfigManager = (function() {
         if (config.baseUrl) localStorage.setItem(KEYS.BASE_URL, config.baseUrl);
         if (config.apiKey) localStorage.setItem(KEYS.API_KEY, config.apiKey);
         if (config.model) localStorage.setItem(KEYS.MODEL, config.model);
+        if (config.backendUrl !== undefined) localStorage.setItem(KEYS.BACKEND_URL, config.backendUrl);
+        if (config.backendApiKey !== undefined) localStorage.setItem(KEYS.BACKEND_API_KEY, config.backendApiKey);
     }
 
     function isValid() {
@@ -35,3 +42,4 @@ const ConfigManager = (function() {
         isValid: isValid
     };
 })();
+

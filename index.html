@@ -89,18 +89,38 @@
 
         <!-- Settings View -->
         <main id="view-settings" class="view hidden">
-            <div class="form-group">
-                <label for="config-base-url">API Base URL</label>
-                <input type="text" id="config-base-url" placeholder="https://api.openai.com" />
+            <!-- Backend Service Settings -->
+            <div class="settings-section">
+                <h3 class="settings-section-title">Backend Service</h3>
+                <div class="form-group">
+                    <label for="config-backend-url">Backend URL</label>
+                    <input type="text" id="config-backend-url" placeholder="localhost:3000" />
+                    <small class="form-hint">The server hosting this add-in (default: localhost:3000)</small>
+                </div>
+                <div class="form-group">
+                    <label for="config-backend-api-key">Backend API Key (Optional)</label>
+                    <input type="password" id="config-backend-api-key" placeholder="Your service API key" />
+                    <small class="form-hint">Required for SaaS subscriptions</small>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="config-api-key">API Key</label>
-                <input type="password" id="config-api-key" placeholder="sk-..." />
+
+            <!-- AI Service Settings -->
+            <div class="settings-section">
+                <h3 class="settings-section-title">AI Service</h3>
+                <div class="form-group">
+                    <label for="config-base-url">API Base URL</label>
+                    <input type="text" id="config-base-url" placeholder="https://api.openai.com" />
+                </div>
+                <div class="form-group">
+                    <label for="config-api-key">API Key</label>
+                    <input type="password" id="config-api-key" placeholder="sk-..." />
+                </div>
+                <div class="form-group">
+                    <label for="config-model">Model Name</label>
+                    <input type="text" id="config-model" placeholder="gpt-4o" value="gpt-4o" />
+                </div>
             </div>
-            <div class="form-group">
-                <label for="config-model">Model Name</label>
-                <input type="text" id="config-model" placeholder="gpt-4o" value="gpt-4o" />
-            </div>
+
             <div class="settings-actions">
                 <button id="btn-save-settings" class="ms-Button ms-Button--primary">Save</button>
                 <button id="btn-cancel-settings" class="ms-Button">Cancel</button>

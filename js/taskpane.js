@@ -63,6 +63,8 @@ function initApp() {
 
     function loadSettingsToUI() {
         const config = ConfigManager.get();
+        document.getElementById('config-backend-url').value = config.backendUrl;
+        document.getElementById('config-backend-api-key').value = config.backendApiKey;
         document.getElementById('config-base-url').value = config.baseUrl;
         document.getElementById('config-api-key').value = config.apiKey;
         document.getElementById('config-model').value = config.model;
@@ -70,6 +72,8 @@ function initApp() {
 
     function saveSettingsFromUI() {
         const config = {
+            backendUrl: document.getElementById('config-backend-url').value,
+            backendApiKey: document.getElementById('config-backend-api-key').value,
             baseUrl: document.getElementById('config-base-url').value,
             apiKey: document.getElementById('config-api-key').value,
             model: document.getElementById('config-model').value

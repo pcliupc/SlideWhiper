@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- 
+  SlideWhisper Production Manifest Template
+  
+  INSTRUCTIONS:
+  1. Replace YOUR_PRODUCTION_DOMAIN with your actual production domain
+  2. Update the Id with a new unique GUID for production
+  3. Update SupportUrl with your actual support page
+  4. Add any additional API domains your backend requires to AppDomains
+  
+  Example:
+  - https://slidewhisper.yourcompany.com
+-->
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="TaskPaneApp">
+  <Id>YOUR-PRODUCTION-GUID-HERE</Id>
+  <Version>1.0.0.0</Version>
+  <ProviderName>SlideWhisper</ProviderName>
+  <DefaultLocale>en-US</DefaultLocale>
+  <DisplayName DefaultValue="AI PPT Speech Assistant"/>
+  <Description DefaultValue="Generate speech notes from slides using AI."/>
+  <IconUrl DefaultValue="https://YOUR_PRODUCTION_DOMAIN/assets/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://YOUR_PRODUCTION_DOMAIN/assets/icon-64.png"/>
+  <SupportUrl DefaultValue="https://YOUR_PRODUCTION_DOMAIN/help"/>
+  <AppDomains>
+    <AppDomain>https://api.openai.com</AppDomain>
+    <AppDomain>https://models.inference.ai.azure.com</AppDomain>
+    <!-- Add your backend API domain here if needed -->
+  </AppDomains>
+  <Hosts>
+    <Host Name="Presentation"/>
+  </Hosts>
+  <DefaultSettings>
+    <SourceLocation DefaultValue="https://YOUR_PRODUCTION_DOMAIN/index.html"/>
+  </DefaultSettings>
+  <Permissions>ReadWriteDocument</Permissions>
+</OfficeApp>
